@@ -1,0 +1,23 @@
+{
+  "entities": {
+    "Recipe": {
+      "title": "Recipe",
+      "description": "A saved cooking recipe",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["title", "content", "userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "recipes": {
+      "schema": "Recipe",
+      "description": "Collection of saved recipes"
+    }
+  }
+}

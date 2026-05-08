@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+}
+
+body {
+  background-color: #020617; /* slate-950 */
+  color: #ffffff;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.luxury-title {
+  font-family: "Playfair Display", ui-serif, Georgia, serif;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+}
+
+.markdown-body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.7;
+}
+
+.markdown-body h1, 
+.markdown-body h2, 
+.markdown-body h3 {
+  font-family: "Playfair Display", ui-serif, Georgia, serif;
+  font-weight: 400;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.markdown-body h1 { 
+  font-size: 2.25rem; /* text-4xl */
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+.markdown-body h2 { 
+  font-size: 1.5rem; 
+  padding-bottom: 0.5rem; 
+  margin-top: 2.5rem;
+}
+
+.markdown-body h3 { 
+  font-size: 0.625rem; /* text-[10px] */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.75rem;
+}
+
+.markdown-body blockquote {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-style: italic;
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 300;
+  color: rgba(255,255,255,0.8);
+  border-left: 2px solid rgba(249, 115, 22, 0.5); /* orange-500/50 */
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+}
+
+.markdown-body ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+}
+
+.markdown-body ul li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.markdown-body ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 0.375rem; /* 1.5 */
+  height: 0.375rem;
+  background-color: #fb923c; /* orange-400 */
+  border-radius: 9999px;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.markdown-body ol li {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-body ol li::marker {
+  color: #fb923c; /* orange-400 */
+  font-weight: 700;
+}
+
+.markdown-body strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
