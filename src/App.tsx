@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ChefHat, Sparkles, Utensils, Loader2, Camera, Save, Trash2, ArrowLeft, LogIn, User } from 'lucide-react';
+import { ChefHat, Sparkles, Utensils, Loader2, Camera, Save, Trash2, ArrowLeft, LogIn, User, LogOut } from 'lucide-react';
 import { ImageUploader } from './components/ImageUploader';
 import { generateRecipeStream } from './services/geminiService';
 import { db, auth } from './lib/firebase';
 import { collection, addDoc, query, where, getDocs, deleteDoc, doc, orderBy, serverTimestamp } from 'firebase/firestore';
-import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 
 enum View {
   LAB = 'lab',
@@ -30,7 +30,19 @@ export default function App() {
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -48,6 +60,16 @@ export default function App() {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Login failed:", error);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setSavedRecipes([]);
+      setCurrentView(View.LAB);
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   };
 
@@ -183,24 +205,62 @@ export default function App() {
             我的厨房
           </button>
           
-          <div className="ml-4 pl-4 border-l border-white/10">
+          <div className="ml-4 pl-4 border-l border-white/10 relative" ref={menuRef}>
             {user ? (
-              <div className="flex items-center gap-2 text-white/40">
-                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-4 h-4" />
-                  )}
-                </div>
-                <span className="hidden sm:inline text-xs">{user.displayName || '主厨'}</span>
-              </div>
+              <>
+                <button 
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex items-center gap-2 group transition-all"
+                >
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20 group-hover:border-orange-500/50 transition-colors">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-4 h-4 text-white/40" />
+                    )}
+                  </div>
+                  <span className="hidden sm:inline text-xs text-white/60 group-hover:text-white transition-colors">
+                    {user.displayName || '主厨'}
+                  </span>
+                </button>
+
+                {showProfileMenu && (
+                  <div className="absolute right-0 mt-3 w-56 bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200">
+                    <div className="px-5 py-4 border-b border-white/10 bg-white/5">
+                      <p className="text-sm font-bold text-white truncate">{user.displayName || 'AI 主厨'}</p>
+                      <p className="text-xs text-white/40 truncate">{user.email}</p>
+                    </div>
+                    <div className="p-2 space-y-1">
+                      <button 
+                        onClick={() => {
+                          setCurrentView(View.KITCHEN);
+                          setShowProfileMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all active:scale-95"
+                      >
+                        <Utensils className="w-4 h-4" />
+                        <span>我的厨房</span>
+                      </button>
+                      <button 
+                        onClick={async () => {
+                          await logout();
+                          setShowProfileMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-400 hover:text-white hover:bg-red-500 rounded-xl transition-all active:scale-95 group"
+                      >
+                        <LogOut className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                        <span>退出登录</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             ) : (
               <button 
                 onClick={login}
                 className="flex items-center gap-2 px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs transition-all"
               >
-                <LogIn className="w-3 h-3" />
+                <LogIn className="w-3 h-3 text-orange-400" />
                 登录
               </button>
             )}
