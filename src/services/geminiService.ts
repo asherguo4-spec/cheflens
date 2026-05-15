@@ -30,11 +30,6 @@ const SYSTEM_INSTRUCTION = `
 `;
 
 export async function generateRecipeStream(imageObj: { inlineData: { data: string, mimeType: string } } | null, textPrompt: string, onUpdate: (text: string) => void) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENROUTER_API_KEY is not configured.");
-  }
-
   const messages: any[] = [{ role: 'system', content: SYSTEM_INSTRUCTION }];
   const content: any[] = [];
 
@@ -56,16 +51,13 @@ export async function generateRecipeStream(imageObj: { inlineData: { data: strin
   messages.push({ role: 'user', content });
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("/api/generate", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": window.location.origin,
-        "X-Title": "ChefLens"
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-001",
+        model: "qwen/qwen-2-vl-72b-instruct",
         messages,
         stream: true
       })
@@ -73,7 +65,7 @@ export async function generateRecipeStream(imageObj: { inlineData: { data: strin
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`OpenRouter 接口报错 (${response.status}): ${errorText}`);
+      throw new Error(`AI 服务报错 (${response.status}): ${errorText}`);
     }
 
     if (!response.body) throw new Error("No response body");
