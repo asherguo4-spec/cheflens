@@ -10,8 +10,14 @@ async function startServer() {
   // Use JSON middleware for API routes
   app.use(express.json({ limit: '10mb' }));
 
+  // Health check
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", env: process.env.NODE_ENV });
+  });
+
   // API Proxy for OpenRouter to hide API Key and avoid CORS
   app.post("/api/generate", async (req, res) => {
+    console.log("Proxying request to OpenRouter...");
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: "OPENROUTER_API_KEY environment variable is not configured." });
