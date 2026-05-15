@@ -57,7 +57,7 @@ export async function generateRecipeStream(imageObj: { inlineData: { data: strin
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "qwen/qwen-2-vl-7b-instruct",
+        model: "qwen/qwen-2-vl-72b-instruct",
         messages,
         stream: true
       })
